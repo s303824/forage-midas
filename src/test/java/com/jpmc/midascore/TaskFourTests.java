@@ -1,5 +1,6 @@
 package com.jpmc.midascore;
 
+import com.jpmc.midascore.component.DatabaseConduit;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +24,9 @@ public class TaskFourTests {
     @Autowired
     private FileLoader fileLoader;
 
+    @Autowired
+    private DatabaseConduit db;
+
     @Test
     void task_four_verifier() throws InterruptedException {
         userPopulator.populate();
@@ -40,6 +44,7 @@ public class TaskFourTests {
         logger.info("kill this test once you find the answer");
         while (true) {
             Thread.sleep(20000);
+            System.out.println(db.findById(9));
             logger.info("...");
         }
     }

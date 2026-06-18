@@ -1,5 +1,6 @@
 package com.jpmc.midascore;
 
+import com.jpmc.midascore.component.DatabaseConduit;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,11 +24,15 @@ public class TaskThreeTests {
     @Autowired
     private FileLoader fileLoader;
 
+    @Autowired
+    private DatabaseConduit db;
+
     @Test
     void task_three_verifier() throws InterruptedException {
         userPopulator.populate();
         String[] transactionLines = fileLoader.loadStrings("/test_data/mnbvcxz.vbnm");
         for (String transactionLine : transactionLines) {
+            System.out.println("Transaction sending...");
             kafkaProducer.send(transactionLine);
         }
         Thread.sleep(2000);
@@ -40,6 +45,7 @@ public class TaskThreeTests {
         logger.info("kill this test once you find the answer");
         while (true) {
             Thread.sleep(20000);
+            System.out.println(db.findById(5));
             logger.info("...");
         }
     }
