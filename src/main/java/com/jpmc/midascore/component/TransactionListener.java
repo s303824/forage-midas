@@ -13,26 +13,23 @@ import org.springframework.stereotype.Component;
 public class TransactionListener {
 
     @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private TransactionRepository transactionRepository;
+    private DatabaseConduit databaseConduit;
 
     // Listen for message from Kafka
     @KafkaListener(topics="${general.kafka-topic}", groupId = "transaction-group")
     public void listen(Transaction transaction){
         // when message received, check if parties are in DB and amount is payable
 
-        UserRecord sender = userRepository.findById(transaction.getSenderId());
-        UserRecord recipient = userRepository.findById(transaction.getRecipientId());
+        UserRecord sender = databaseConduit.findById(transaction.getSenderId());
+        UserRecord recipient = databaseConduit.findById(transaction.getRecipientId());
 
         float amount = transaction.getAmount();
 
         if(sender != null & recipient != null && sender.getBalance()>=amount){
             // if so, save record of transaction in DB
-            System.out.println("Valid transaction recognized.");
+            System.out.println("Transaction received (VALID): " + transaction);
             TransactionRecord transactionRecord = new TransactionRecord(sender, recipient, amount);
-            transactionRepository.save(transactionRecord);
+            databaseConduit.save(transactionRecord);
 
             // and update records in both parties' accounts
             float prevSenderAmount = sender.getBalance();
@@ -41,11 +38,11 @@ public class TransactionListener {
             sender.setBalance(prevSenderAmount - amount);
             recipient.setBalance(prevRecipientAmount + amount);
 
-            userRepository.save(sender);
-            userRepository.save(recipient);
+            databaseConduit.save(sender);
+            databaseConduit.save(recipient);
         }
         else {
-            System.out.println("Invalid transaction discarded.");
+            System.out.println("Transaction received (INVALID): " + transaction);
         }
     }
 }
