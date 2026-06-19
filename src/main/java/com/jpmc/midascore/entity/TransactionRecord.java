@@ -30,7 +30,7 @@ public class TransactionRecord {
 
     @Override
     public String toString() {
-        return String.format("Transaction[id=%d, sender='%s', recipient='%s' amount='%f'", id, sender, recipient, amount);
+        return String.format("TransactionRecord[id=%d, sender='%s', recipient='%s' amount='%f'", id, sender, recipient, amount);
     }
 
     public Long getId() {
